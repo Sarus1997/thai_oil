@@ -35,8 +35,10 @@ class StationDetailScreen extends StatelessWidget {
         onTap: () => Navigator.pop(context),
         child: Container(
           margin: const EdgeInsets.all(8),
-          decoration: BoxDecoration(color: AppTheme.surface, borderRadius: BorderRadius.circular(10)),
-          child: const Icon(Icons.arrow_back_ios_new_rounded, size: 16, color: AppTheme.textPrimary),
+          decoration: BoxDecoration(
+              color: AppTheme.surface, borderRadius: BorderRadius.circular(10)),
+          child: const Icon(Icons.arrow_back_ios_new_rounded,
+              size: 16, color: AppTheme.textPrimary),
         ),
       ),
       flexibleSpace: FlexibleSpaceBar(
@@ -62,10 +64,14 @@ class StationDetailScreen extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(station.name,
-                            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w800, color: AppTheme.textPrimary)),
+                            style: const TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w800,
+                                color: AppTheme.textPrimary)),
                         const SizedBox(height: 3),
                         Text(station.address,
-                            style: const TextStyle(fontSize: 11, color: AppTheme.textSecondary)),
+                            style: const TextStyle(
+                                fontSize: 11, color: AppTheme.textSecondary)),
                       ],
                     ),
                   ),
@@ -91,14 +97,22 @@ class StationDetailScreen extends StatelessWidget {
           const SizedBox(width: 8),
           _InfoChip(icon: Icons.access_time_rounded, text: station.hours),
           const SizedBox(width: 8),
-          _InfoChip(icon: Icons.near_me_rounded, text: '${station.distance.toStringAsFixed(1)} กม.'),
+          _InfoChip(
+              icon: Icons.near_me_rounded,
+              text: '${station.distance.toStringAsFixed(1)} กม.'),
           const Spacer(),
           Row(
             children: [
               const Icon(Icons.star_rounded, color: AppTheme.amber, size: 14),
               const SizedBox(width: 3),
-              Text('${station.rating}', style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: AppTheme.textPrimary)),
-              Text(' (${station.reviewCount})', style: const TextStyle(fontSize: 11, color: AppTheme.textSecondary)),
+              Text('${station.rating}',
+                  style: const TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w600,
+                      color: AppTheme.textPrimary)),
+              Text(' (${station.reviewCount})',
+                  style: const TextStyle(
+                      fontSize: 11, color: AppTheme.textSecondary)),
             ],
           ),
         ],
@@ -126,7 +140,11 @@ class StationDetailScreen extends StatelessWidget {
                     padding: const EdgeInsets.only(bottom: 6, top: 4),
                     child: Text(
                       entry.key,
-                      style: const TextStyle(fontSize: 10, color: AppTheme.textMuted, fontWeight: FontWeight.w600, letterSpacing: 0.5),
+                      style: const TextStyle(
+                          fontSize: 10,
+                          color: AppTheme.textMuted,
+                          fontWeight: FontWeight.w600,
+                          letterSpacing: 0.5),
                     ),
                   ),
                   ...entry.value.map((p) => _PriceRow(price: p)),
@@ -147,12 +165,14 @@ class StationDetailScreen extends StatelessWidget {
             child: ElevatedButton.icon(
               onPressed: () => _openMaps(station),
               icon: const Icon(Icons.directions_rounded, size: 18),
-              label: const Text('นำทางไปปั้มนี้', style: TextStyle(fontWeight: FontWeight.w700, fontSize: 14)),
+              label: const Text('นำทางไปปั้มนี้',
+                  style: TextStyle(fontWeight: FontWeight.w700, fontSize: 14)),
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppTheme.primary,
                 foregroundColor: Colors.white,
                 padding: const EdgeInsets.symmetric(vertical: 14),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12)),
                 elevation: 0,
               ),
             ),
@@ -163,12 +183,14 @@ class StationDetailScreen extends StatelessWidget {
             child: OutlinedButton.icon(
               onPressed: () {},
               icon: const Icon(Icons.favorite_border_rounded, size: 18),
-              label: const Text('เพิ่มในรายการโปรด', style: TextStyle(fontWeight: FontWeight.w600, fontSize: 14)),
+              label: const Text('เพิ่มในรายการโปรด',
+                  style: TextStyle(fontWeight: FontWeight.w600, fontSize: 14)),
               style: OutlinedButton.styleFrom(
                 foregroundColor: AppTheme.textSecondary,
                 padding: const EdgeInsets.symmetric(vertical: 14),
                 side: const BorderSide(color: AppTheme.border, width: 0.5),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12)),
               ),
             ),
           ),
@@ -190,7 +212,10 @@ class _InfoChip extends StatelessWidget {
   final String text;
   final Color iconColor;
 
-  const _InfoChip({required this.icon, required this.text, this.iconColor = AppTheme.textSecondary});
+  const _InfoChip(
+      {required this.icon,
+      required this.text,
+      this.iconColor = AppTheme.textSecondary});
 
   @override
   Widget build(BuildContext context) {
@@ -206,7 +231,11 @@ class _InfoChip extends StatelessWidget {
         children: [
           Icon(icon, size: 9, color: iconColor),
           const SizedBox(width: 4),
-          Text(text, style: const TextStyle(fontSize: 9, color: AppTheme.textSecondary, fontWeight: FontWeight.w500)),
+          Text(text,
+              style: const TextStyle(
+                  fontSize: 9,
+                  color: AppTheme.textSecondary,
+                  fontWeight: FontWeight.w500)),
         ],
       ),
     );
@@ -232,13 +261,19 @@ class _PriceRow extends StatelessWidget {
         children: [
           Expanded(
             child: Text(price.typeLabel,
-                style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: AppTheme.textPrimary)),
+                style: const TextStyle(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w600,
+                    color: AppTheme.textPrimary)),
           ),
           PriceChangeBadge(change: price.change),
           const SizedBox(width: 12),
           Text(
             '${price.price.toStringAsFixed(2)} ฿',
-            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700, color: AppTheme.primary),
+            style: const TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w700,
+                color: AppTheme.primary),
           ),
         ],
       ),

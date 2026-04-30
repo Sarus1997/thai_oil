@@ -16,6 +16,8 @@ class FuelBrand {
     FuelBrand(id: 'pt', name: 'พีที', shortName: 'PT'),
     FuelBrand(id: 'caltex', name: 'คาลเท็กซ์', shortName: 'Caltex'),
     FuelBrand(id: 'susco', name: 'ซัสโก้', shortName: 'SUSCO'),
+    FuelBrand(id: 'irpc', name: 'ไออาร์พีซี', shortName: 'IRPC'),
+    FuelBrand(id: 'pure', name: 'เพียว', shortName: 'Pure'),
   ];
 }
 
@@ -53,6 +55,7 @@ class GasStation {
   final String hours;
   final bool isOpen;
   final List<FuelPrice> prices;
+  final String? placeId; // Google Place ID — เปิด Maps / Details
 
   const GasStation({
     required this.id,
@@ -68,5 +71,6 @@ class GasStation {
     required this.hours,
     required this.isOpen,
     required this.prices,
+    this.placeId,
   });
 }

@@ -76,15 +76,31 @@ class BrandIconBadge extends StatelessWidget {
   Map<String, dynamic> _brandConfig(String id) {
     switch (id) {
       case 'shell':
-        return {'label': 'SH', 'color': AppTheme.shellColor, 'bg': AppTheme.shellBg};
+        return {
+          'label': 'SH',
+          'color': AppTheme.shellColor,
+          'bg': AppTheme.shellBg
+        };
       case 'bcp':
-        return {'label': 'BCP', 'color': AppTheme.bcpColor, 'bg': AppTheme.bcpBg};
+        return {
+          'label': 'BCP',
+          'color': AppTheme.bcpColor,
+          'bg': AppTheme.bcpBg
+        };
       case 'pt':
         return {'label': 'PT', 'color': AppTheme.ptColor, 'bg': AppTheme.ptBg};
       case 'caltex':
-        return {'label': 'CAL', 'color': AppTheme.amber, 'bg': AppTheme.amberBg};
+        return {
+          'label': 'CAL',
+          'color': AppTheme.amber,
+          'bg': AppTheme.amberBg
+        };
       default:
-        return {'label': 'PTT', 'color': AppTheme.pttColor, 'bg': AppTheme.pttBg};
+        return {
+          'label': 'PTT',
+          'color': AppTheme.pttColor,
+          'bg': AppTheme.pttBg
+        };
     }
   }
 }
@@ -100,9 +116,11 @@ class PriceChangeBadge extends StatelessWidget {
     if (change == 0) {
       return _badge('─ คงที่', AppTheme.textSecondary, AppTheme.surface);
     } else if (change > 0) {
-      return _badge('▲ +${change.toStringAsFixed(2)}', AppTheme.red, AppTheme.redBg);
+      return _badge(
+          '▲ +${change.toStringAsFixed(2)}', AppTheme.red, AppTheme.redBg);
     } else {
-      return _badge('▼ ${change.toStringAsFixed(2)}', AppTheme.blue, AppTheme.blueBg);
+      return _badge(
+          '▼ ${change.toStringAsFixed(2)}', AppTheme.blue, AppTheme.blueBg);
     }
   }
 
@@ -113,7 +131,9 @@ class PriceChangeBadge extends StatelessWidget {
         color: bg,
         borderRadius: BorderRadius.circular(5),
       ),
-      child: Text(text, style: TextStyle(fontSize: 10, color: color, fontWeight: FontWeight.w600)),
+      child: Text(text,
+          style: TextStyle(
+              fontSize: 10, color: color, fontWeight: FontWeight.w600)),
     );
   }
 }
@@ -123,7 +143,8 @@ class FuelPriceCard extends StatelessWidget {
   final FuelPrice price;
   final bool isHighlight;
 
-  const FuelPriceCard({super.key, required this.price, this.isHighlight = false});
+  const FuelPriceCard(
+      {super.key, required this.price, this.isHighlight = false});
 
   @override
   Widget build(BuildContext context) {
@@ -133,7 +154,8 @@ class FuelPriceCard extends StatelessWidget {
         color: isHighlight ? AppTheme.cardHighlight : AppTheme.card,
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
-          color: isHighlight ? AppTheme.primary.withOpacity(0.5) : AppTheme.border,
+          color:
+              isHighlight ? AppTheme.primary.withOpacity(0.5) : AppTheme.border,
           width: 0.5,
         ),
       ),
@@ -142,7 +164,10 @@ class FuelPriceCard extends StatelessWidget {
         children: [
           Text(
             price.typeLabel,
-            style: const TextStyle(fontSize: 11, color: AppTheme.textSecondary, fontWeight: FontWeight.w500),
+            style: const TextStyle(
+                fontSize: 11,
+                color: AppTheme.textSecondary,
+                fontWeight: FontWeight.w500),
           ),
           const SizedBox(height: 4),
           RichText(
@@ -153,7 +178,8 @@ class FuelPriceCard extends StatelessWidget {
                   style: TextStyle(
                     fontSize: 22,
                     fontWeight: FontWeight.w700,
-                    color: isHighlight ? AppTheme.primary : AppTheme.textPrimary,
+                    color:
+                        isHighlight ? AppTheme.primary : AppTheme.textPrimary,
                   ),
                 ),
                 const TextSpan(
@@ -182,15 +208,19 @@ class ShimmerCard extends StatefulWidget {
   State<ShimmerCard> createState() => _ShimmerCardState();
 }
 
-class _ShimmerCardState extends State<ShimmerCard> with SingleTickerProviderStateMixin {
+class _ShimmerCardState extends State<ShimmerCard>
+    with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<double> _animation;
 
   @override
   void initState() {
     super.initState();
-    _controller = AnimationController(vsync: this, duration: const Duration(milliseconds: 1200))..repeat();
-    _animation = Tween<double>(begin: -1.0, end: 2.0).animate(CurvedAnimation(parent: _controller, curve: Curves.easeInOut));
+    _controller = AnimationController(
+        vsync: this, duration: const Duration(milliseconds: 1200))
+      ..repeat();
+    _animation = Tween<double>(begin: -1.0, end: 2.0)
+        .animate(CurvedAnimation(parent: _controller, curve: Curves.easeInOut));
   }
 
   @override
@@ -211,7 +241,11 @@ class _ShimmerCardState extends State<ShimmerCard> with SingleTickerProviderStat
           gradient: LinearGradient(
             begin: Alignment(_animation.value - 1, 0),
             end: Alignment(_animation.value, 0),
-            colors: const [AppTheme.surface, Color(0xFF1E2540), AppTheme.surface],
+            colors: const [
+              AppTheme.surface,
+              Color(0xFF1E2540),
+              AppTheme.surface
+            ],
           ),
         ),
       ),
@@ -225,7 +259,8 @@ class SectionHeader extends StatelessWidget {
   final String? action;
   final VoidCallback? onAction;
 
-  const SectionHeader({super.key, required this.title, this.action, this.onAction});
+  const SectionHeader(
+      {super.key, required this.title, this.action, this.onAction});
 
   @override
   Widget build(BuildContext context) {
@@ -246,7 +281,10 @@ class SectionHeader extends StatelessWidget {
             onTap: onAction,
             child: Text(
               action!,
-              style: const TextStyle(fontSize: 11, color: AppTheme.primary, fontWeight: FontWeight.w600),
+              style: const TextStyle(
+                  fontSize: 11,
+                  color: AppTheme.primary,
+                  fontWeight: FontWeight.w600),
             ),
           ),
       ],
