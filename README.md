@@ -5,10 +5,10 @@
 <div align="center">
   <table>
     <tr>
-      <td><img src="./assets/ex/ex1.png" width="150" alt="หน้าหลัก" /></td>
-      <td><img src="./assets/ex/ex2.png" width="150" alt="ราคาน้ำมัน" /></td>
-      <td><img src="./assets/ex/ex3.png" width="150" alt="แผนที่ Dark Theme" /></td>
-      <td><img src="./assets/ex/ex4.png" width="150" alt="รายละเอียดปั้ม" /></td>
+      <td><img src="./assets/ex/ex1.png" width="200" alt="หน้าหลัก" /></td>
+      <td><img src="./assets/ex/ex2.png" width="200" alt="ราคาน้ำมัน" /></td>
+      <td><img src="./assets/ex/ex3.png" width="200" alt="แผนที่ Dark Theme" /></td>
+      <td><img src="./assets/ex/ex4.png" width="200" alt="รายละเอียดปั้ม" /></td>
     </tr>
   </table>
   <em>📍 หน้าหลัก · ราคาน้ำมัน · แผนที่ค้นหาปั้ม · รายละเอียดและนำทาง</em>
