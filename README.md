@@ -24,13 +24,13 @@
 <a href="https://flutter.dev"> <img src="https://img.shields.io/badge/Flutter-3.22+-02569B?style=flat&logo=flutter&logoColor=white" alt="Flutter"> </a> 
 <a href="https://dart.dev"> <img src="https://img.shields.io/badge/Dart-3.4+-0175C2?style=flat&logo=dart&logoColor=white" alt="Dart"> </a> 
 <a href="https://www.openstreetmap.org"> <img src="https://img.shields.io/badge/OpenStreetMap-7EBC6F?style=flat&logo=openstreetmap&logoColor=white" alt="OSM"> </a> 
-<a href="https://github.com/yourusername/fuelth/blob/main/LICENSE"> <img src="https://img.shields.io/badge/License-MIT-green.svg" alt="MIT License"> </a> <br> <strong>📍 รู้ราคาน้ำมันจริงรายวัน · 🔍 ค้นหาปั้มใกล้คุณด้วย OpenStreetMap</strong> </p>
+<br> <strong>📍 รู้ราคาน้ำมันจริงรายวัน · 🔍 ค้นหาปั้มใกล้คุณด้วย OpenStreetMap</strong> </p>
   </p>
   <p>
-    <a href="#-features">✨ Features</a> •
-    <a href="#-apis">📡 APIs</a> •
-    <a href="#-project-structure">📁 Project structure</a> •
-    <a href="#-installation">🚀 Installation</a> •
+    <a href="#-features">✨ Features</a> |
+    <a href="#-apis">📡 APIs</a> |
+    <a href="#-project-structure">📁 Project structure</a> |
+    <a href="#-installation">🚀 Installation</a>
   </p>
 </div>
 
