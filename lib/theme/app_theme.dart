@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class AppTheme {
   // Colors
@@ -36,29 +37,60 @@ class AppTheme {
   static const Color ptBg = Color(0xFF2D0A0A);
 
   static ThemeData get darkTheme {
+    // ใช้ Sarabun — รองรับภาษาไทยครบถ้วน
+    final textTheme = GoogleFonts.sarabunTextTheme(
+      ThemeData.dark().textTheme,
+    ).apply(
+      bodyColor: textPrimary,
+      displayColor: textPrimary,
+    );
+
     return ThemeData(
       useMaterial3: true,
       brightness: Brightness.dark,
       scaffoldBackgroundColor: background,
+      textTheme: textTheme,
       colorScheme: const ColorScheme.dark(
         primary: primary,
         surface: surface,
         onPrimary: Colors.white,
         onSurface: textPrimary,
       ),
-      fontFamily: 'Sarabun',
-      appBarTheme: const AppBarTheme(
+      // กำหนด font family ผ่าน GoogleFonts ด้วย เพื่อ fallback ครบ
+      fontFamily: GoogleFonts.sarabun().fontFamily,
+      appBarTheme: AppBarTheme(
         backgroundColor: background,
         foregroundColor: textPrimary,
         elevation: 0,
         centerTitle: false,
+        titleTextStyle: GoogleFonts.sarabun(
+          fontSize: 18,
+          fontWeight: FontWeight.w700,
+          color: textPrimary,
+        ),
       ),
-      bottomNavigationBarTheme: const BottomNavigationBarThemeData(
+      bottomNavigationBarTheme: BottomNavigationBarThemeData(
         backgroundColor: surfaceAlt,
         selectedItemColor: primary,
         unselectedItemColor: textSecondary,
         type: BottomNavigationBarType.fixed,
         elevation: 0,
+        selectedLabelStyle:
+            GoogleFonts.sarabun(fontSize: 11, fontWeight: FontWeight.w600),
+        unselectedLabelStyle: GoogleFonts.sarabun(fontSize: 11),
+      ),
+      tabBarTheme: TabBarThemeData(
+        labelStyle:
+            GoogleFonts.sarabun(fontSize: 13, fontWeight: FontWeight.w600),
+        unselectedLabelStyle: GoogleFonts.sarabun(fontSize: 13),
+      ),
+      elevatedButtonTheme: ElevatedButtonThemeData(
+        style: ElevatedButton.styleFrom(
+          textStyle: GoogleFonts.sarabun(fontWeight: FontWeight.w700),
+        ),
+      ),
+      inputDecorationTheme: InputDecorationTheme(
+        hintStyle: GoogleFonts.sarabun(color: textSecondary),
       ),
     );
   }

@@ -8,6 +8,7 @@ import '../services/app_provider.dart';
 import '../models/fuel_model.dart';
 import '../theme/app_theme.dart';
 import '../widgets/common_widgets.dart';
+import '../widgets/horizontal_scroll_list.dart';
 import 'station_detail_screen.dart';
 
 class NearbyScreen extends StatefulWidget {
@@ -166,38 +167,40 @@ class _NearbyScreenState extends State<NearbyScreen> {
 
   // ─── Filters + Radius ─────────────────────────────────────────────────────
   Widget _buildFiltersRow(AppProvider provider) {
+    final radiusItems = [1000.0, 3000.0, 5000.0, 10000.0];
+
     return Padding(
       padding: const EdgeInsets.only(bottom: 6),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Brand filters
-          SizedBox(
-            height: 34,
-            child: ListView(
-              scrollDirection: Axis.horizontal,
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              children: [
-                _FilterChip(
-                    label: 'ทั้งหมด',
-                    isSelected: _filterBrands.isEmpty,
-                    onTap: () => setState(() => _filterBrands.clear())),
-                const SizedBox(width: 6),
-                ...FuelBrand.all.map((b) => Padding(
-                      padding: const EdgeInsets.only(right: 6),
-                      child: _FilterChip(
-                        label: b.shortName,
-                        isSelected: _filterBrands.contains(b.id),
-                        onTap: () => setState(() => _filterBrands.contains(b.id)
-                            ? _filterBrands.remove(b.id)
-                            : _filterBrands.add(b.id)),
-                      ),
-                    )),
-              ],
-            ),
+          // ── Brand filter chips (scrollable) ─────────────────────────
+          HorizontalScrollListSurface(
+            height: 36,
+            padding: const EdgeInsets.symmetric(horizontal: 20),
+            children: [
+              _FilterChip(
+                label: 'ทั้งหมด',
+                isSelected: _filterBrands.isEmpty,
+                onTap: () => setState(() => _filterBrands.clear()),
+              ),
+              const SizedBox(width: 6),
+              ...FuelBrand.all.map((b) => Padding(
+                    padding: const EdgeInsets.only(right: 6),
+                    child: _FilterChip(
+                      label: b.shortName,
+                      isSelected: _filterBrands.contains(b.id),
+                      onTap: () => setState(() => _filterBrands.contains(b.id)
+                          ? _filterBrands.remove(b.id)
+                          : _filterBrands.add(b.id)),
+                    ),
+                  )),
+            ],
           ),
-          // Radius
+          const SizedBox(height: 6),
+          // ── Radius row + count ───────────────────────────────────────
           Padding(
-            padding: const EdgeInsets.fromLTRB(20, 6, 20, 0),
+            padding: const EdgeInsets.symmetric(horizontal: 20),
             child: Row(
               children: [
                 const Icon(Icons.radar_rounded,
@@ -207,44 +210,54 @@ class _NearbyScreenState extends State<NearbyScreen> {
                     style:
                         TextStyle(fontSize: 10, color: AppTheme.textSecondary)),
                 const SizedBox(width: 8),
-                ...[1000.0, 3000.0, 5000.0, 10000.0].map((r) {
-                  final label = r < 1000
-                      ? '${r.toInt()}ม.'
-                      : '${(r / 1000).toStringAsFixed(0)}กม.';
-                  final sel = provider.searchRadius == r;
-                  return Padding(
-                    padding: const EdgeInsets.only(right: 5),
-                    child: GestureDetector(
-                      onTap: () => provider.setRadius(r),
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 8, vertical: 3),
-                        decoration: BoxDecoration(
-                          color: sel
-                              ? AppTheme.primary.withOpacity(0.18)
-                              : AppTheme.card,
-                          borderRadius: BorderRadius.circular(6),
-                          border: Border.all(
-                              color: sel ? AppTheme.primary : AppTheme.border,
-                              width: 0.5),
+                Expanded(
+                  child: HorizontalScrollListSurface(
+                    height: 26,
+                    padding: EdgeInsets.zero,
+                    children: radiusItems.map((r) {
+                      final label = r < 1000
+                          ? '${r.toInt()}ม.'
+                          : '${(r / 1000).toStringAsFixed(0)}กม.';
+                      final sel = provider.searchRadius == r;
+                      return Padding(
+                        padding: const EdgeInsets.only(right: 6),
+                        child: GestureDetector(
+                          onTap: () => provider.setRadius(r),
+                          child: AnimatedContainer(
+                            duration: const Duration(milliseconds: 150),
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 10, vertical: 4),
+                            decoration: BoxDecoration(
+                              color: sel
+                                  ? AppTheme.primary.withOpacity(0.18)
+                                  : AppTheme.card,
+                              borderRadius: BorderRadius.circular(6),
+                              border: Border.all(
+                                  color:
+                                      sel ? AppTheme.primary : AppTheme.border,
+                                  width: 0.5),
+                            ),
+                            child: Text(label,
+                                style: TextStyle(
+                                    fontSize: 10,
+                                    color: sel
+                                        ? AppTheme.primary
+                                        : AppTheme.textSecondary,
+                                    fontWeight: sel
+                                        ? FontWeight.w700
+                                        : FontWeight.w400)),
+                          ),
                         ),
-                        child: Text(label,
-                            style: TextStyle(
-                                fontSize: 10,
-                                color: sel
-                                    ? AppTheme.primary
-                                    : AppTheme.textSecondary,
-                                fontWeight:
-                                    sel ? FontWeight.w700 : FontWeight.w400)),
-                      ),
-                    ),
-                  );
-                }),
-                const Spacer(),
-                if (provider.nearbyStations.isNotEmpty)
+                      );
+                    }).toList(),
+                  ),
+                ),
+                if (provider.nearbyStations.isNotEmpty) ...[
+                  const SizedBox(width: 8),
                   Text('${provider.nearbyStations.length} แห่ง',
                       style: const TextStyle(
                           fontSize: 10, color: AppTheme.textMuted)),
+                ],
               ],
             ),
           ),

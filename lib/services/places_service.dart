@@ -13,20 +13,34 @@ class PlacesService {
   static const String _overpassUrl = 'https://overpass-api.de/api/interpreter';
 
   static const Map<String, String> _brandNameMap = {
-    'ptt': 'ptt', 'ปตท': 'ptt', 'p.t.t': 'ptt',
-    'shell': 'shell', 'เชลล์': 'shell',
-    'bangchak': 'bcp', 'บางจาก': 'bcp', 'bcp': 'bcp',
-    'pt max': 'pt', 'pt ': 'pt', 'พีที': 'pt',
-    'caltex': 'caltex', 'คาลเท็กซ์': 'caltex',
-    'susco': 'susco', 'ซัสโก้': 'susco',
+    'ptt': 'ptt',
+    'ปตท': 'ptt',
+    'p.t.t': 'ptt',
+    'shell': 'shell',
+    'เชลล์': 'shell',
+    'bangchak': 'bcp',
+    'บางจาก': 'bcp',
+    'bcp': 'bcp',
+    'pt max': 'pt',
+    'pt ': 'pt',
+    'พีที': 'pt',
+    'caltex': 'caltex',
+    'คาลเท็กซ์': 'caltex',
+    'susco': 'susco',
+    'ซัสโก้': 'susco',
     'irpc': 'irpc',
     'pure': 'pure',
   };
 
   static const Map<String, String> _brandDisplayNames = {
-    'ptt': 'ปตท.', 'shell': 'เชลล์', 'bcp': 'บางจาก',
-    'pt': 'พีที', 'caltex': 'คาลเท็กซ์', 'susco': 'ซัสโก้',
-    'irpc': 'ไออาร์พีซี', 'pure': 'เพียว',
+    'ptt': 'ปตท.',
+    'shell': 'เชลล์',
+    'bcp': 'บางจาก',
+    'pt': 'พีที',
+    'caltex': 'คาลเท็กซ์',
+    'susco': 'ซัสโก้',
+    'irpc': 'ไออาร์พีซี',
+    'pure': 'เพียว',
   };
 
   final FuelService fuelService;
@@ -48,17 +62,17 @@ class PlacesService {
 out body center;
 ''';
 
-    final response = await http
-        .post(
-          Uri.parse(_overpassUrl),
-          body: query,
-          headers: {'Content-Type': 'text/plain'},
-        )
-        .timeout(const Duration(seconds: 20));
+    final response = await http.post(
+      Uri.parse(_overpassUrl),
+      body: query,
+      headers: {'Content-Type': 'text/plain'},
+    ).timeout(const Duration(seconds: 20));
 
-    if (response.statusCode != 200) throw Exception('Overpass API error: ${response.statusCode}');
+    if (response.statusCode != 200)
+      throw Exception('Overpass API error: ${response.statusCode}');
 
-    final json = jsonDecode(utf8.decode(response.bodyBytes)) as Map<String, dynamic>;
+    final json =
+        jsonDecode(utf8.decode(response.bodyBytes)) as Map<String, dynamic>;
     final elements = (json['elements'] as List<dynamic>?) ?? [];
     final allPrices = await fuelService.fetchAllPrices();
 
@@ -82,12 +96,13 @@ out body center;
           '?q=${Uri.encodeComponent(query)}'
           '&format=json&limit=1&countrycodes=th',
         );
-        final geoResp = await http
-            .get(geoUri, headers: {'User-Agent': 'FuelThai/1.0'})
-            .timeout(const Duration(seconds: 8));
+        final geoResp = await http.get(geoUri, headers: {
+          'User-Agent': 'FuelThai/1.0'
+        }).timeout(const Duration(seconds: 8));
 
         if (geoResp.statusCode == 200) {
-          final geoData = jsonDecode(utf8.decode(geoResp.bodyBytes)) as List<dynamic>;
+          final geoData =
+              jsonDecode(utf8.decode(geoResp.bodyBytes)) as List<dynamic>;
           if (geoData.isNotEmpty) {
             final first = geoData.first as Map<String, dynamic>;
             searchLat = double.tryParse(first['lat'] as String) ?? lat;
@@ -116,7 +131,10 @@ out body center;
       final tags = (e['tags'] as Map<String, dynamic>?) ?? {};
 
       // ชื่อปั้ม
-      final name = (tags['name'] ?? tags['name:th'] ?? tags['brand'] ?? 'ปั้มน้ำมัน') as String;
+      final name = (tags['name'] ??
+          tags['name:th'] ??
+          tags['brand'] ??
+          'ปั้มน้ำมัน') as String;
       final brandId = _detectBrand(name, tags['brand'] as String? ?? '');
 
       // พิกัด — node ใช้ lat/lon โดยตรง, way ใช้ center
@@ -165,7 +183,8 @@ out body center;
   static String _buildAddress(Map<String, dynamic> tags) {
     final parts = <String>[];
     final street = tags['addr:street'] as String?;
-    final city = tags['addr:city'] ?? tags['addr:suburb'] ?? tags['addr:district'];
+    final city =
+        tags['addr:city'] ?? tags['addr:suburb'] ?? tags['addr:district'];
     final postcode = tags['addr:postcode'] as String?;
     if (street != null) parts.add(street);
     if (city != null) parts.add(city as String);
@@ -181,12 +200,15 @@ out body center;
     return 'ptt';
   }
 
-  static double _haversineKm(double lat1, double lng1, double lat2, double lng2) {
+  static double _haversineKm(
+      double lat1, double lng1, double lat2, double lng2) {
     const r = 6371.0;
     final dLat = _toRad(lat2 - lat1);
     final dLng = _toRad(lng2 - lng1);
     final a = math.pow(math.sin(dLat / 2), 2) +
-        math.cos(_toRad(lat1)) * math.cos(_toRad(lat2)) * math.pow(math.sin(dLng / 2), 2);
+        math.cos(_toRad(lat1)) *
+            math.cos(_toRad(lat2)) *
+            math.pow(math.sin(dLng / 2), 2);
     return r * 2 * math.asin(math.sqrt(a.toDouble()));
   }
 

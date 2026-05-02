@@ -1,109 +1,80 @@
-# FuelTH — แอพตรวจสอบราคาน้ำมัน
+# Fuel_TH — แอพตรวจสอบราคาน้ำมัน
 
-แอพ Flutter สำหรับดูราคาน้ำมัน Realtime พร้อมหาปั้มใกล้เคียง
+## 🗺️ ตัวอย่าง UI ของแอพ
 
-## โครงสร้างโปรเจค
+<center>
+
+<img src="./assets/ex/ex1.png" alt="FuelTH Demo 1" width="160" /> 
+<img src="./assets/ex/ex2.png" alt="FuelTH Demo 2" width="160" /> 
+<img src="./assets/ex/ex3.png" alt="FuelTH Demo 3" width="160" /> 
+<img src="./assets/ex/ex4.png" alt="FuelTH Demo 4" width="160" /> 
+
+</center>
+
+<br/>
+<p align="center"> 
+<a href="https://flutter.dev"> <img src="https://img.shields.io/badge/Flutter-3.22+-02569B?style=flat&logo=flutter&logoColor=white" alt="Flutter"> </a> 
+<a href="https://dart.dev"> <img src="https://img.shields.io/badge/Dart-3.4+-0175C2?style=flat&logo=dart&logoColor=white" alt="Dart"> </a> 
+<a href="https://www.openstreetmap.org"> <img src="https://img.shields.io/badge/OpenStreetMap-7EBC6F?style=flat&logo=openstreetmap&logoColor=white" alt="OSM"> </a> 
+<a href="https://github.com/yourusername/fuelth/blob/main/LICENSE"> <img src="https://img.shields.io/badge/License-MIT-green.svg" alt="MIT License"> </a> <br> <strong>📍 รู้ราคาน้ำมันจริงรายวัน · 🔍 ค้นหาปั้มใกล้คุณด้วย OpenStreetMap</strong> </p>
+
+
+## 📚 APIs ที่ใช้
+
+| API                                                       | ใช้สำหรับ              | ค่าใช้จ่าย |
+| --------------------------------------------------------- | ------------------- | ------- |
+| [Thai Oil API](https://api.chnwt.dev/thai-oil-api/latest) | ราคาน้ำมัน             | ฟรี      |
+| [Overpass API](https://overpass-api.de)                   | ค้นหาปั้มใกล้เคียง       | ฟรี      |
+| [Nominatim](https://nominatim.openstreetmap.org)          | Geocoding (ค้นหาพื้นที่) | ฟรี      |
+| [OpenStreetMap + CartoDB](https://carto.com)              | แผนที่ Dark Theme     | ฟรี      |
+
+## 📁 โครงสร้างโปรเจค
 
 ```
 lib/
-├── main.dart                    # Entry point
-├── theme/
-│   └── app_theme.dart           # สี, font, ThemeData
-├── models/
-│   └── fuel_model.dart          # FuelBrand, FuelPrice, GasStation
+├── main.dart
+├── theme/app_theme.dart
+├── models/fuel_model.dart
 ├── services/
-│   ├── fuel_service.dart        # API calls + Mock data
-│   └── app_provider.dart        # State management (Provider)
+│   ├── fuel_service.dart        # Thai Oil API (cache 30 นาที)
+│   ├── places_service.dart      # Overpass API + Nominatim
+│   └── app_provider.dart        # Provider state
 ├── screens/
-│   ├── home_screen.dart         # หน้าหลัก + Bottom Nav
-│   ├── nearby_screen.dart       # แผนที่ + รายการปั้มใกล้เคียง
-│   └── station_detail_screen.dart  # รายละเอียดปั้ม
+│   ├── home_screen.dart         # หน้าหลัก + ราคา
+│   ├── nearby_screen.dart       # OSM Map + ค้นหา
+│   └── station_detail_screen.dart
 └── widgets/
-    └── common_widgets.dart      # BrandChip, PriceCard, Shimmer ฯลฯ
+    └── common_widgets.dart
 ```
 
-## วิธีติดตั้ง
+## 🚀 วิธีติดตั้ง
 
-### 1. ติดตั้ง Dependencies
 ```bash
 flutter pub get
-```
-
-### 2. ตั้งค่า Google Maps API Key
-
-**Android** — แก้ไขใน `android/app/src/main/AndroidManifest.xml`:
-```xml
-<meta-data android:name="com.google.android.geo.API_KEY"
-           android:value="YOUR_ACTUAL_API_KEY"/>
-```
-
-**iOS** — แก้ไขใน `ios/Runner/AppDelegate.swift`:
-```swift
-import GoogleMaps
-GMSServices.provideAPIKey("YOUR_ACTUAL_API_KEY")
-```
-
-สร้าง API Key ได้ที่: https://console.cloud.google.com/
-เปิดใช้: Maps SDK for Android, Maps SDK for iOS, Directions API
-
-### 3. เพิ่ม Font (Sarabun)
-ดาวน์โหลดจาก Google Fonts แล้วใส่ใน `assets/fonts/`
-แล้วเพิ่มใน `pubspec.yaml`:
-```yaml
-flutter:
-  fonts:
-    - family: Sarabun
-      fonts:
-        - asset: assets/fonts/Sarabun-Regular.ttf
-        - asset: assets/fonts/Sarabun-Medium.ttf  weight: 500
-        - asset: assets/fonts/Sarabun-Bold.ttf    weight: 700
-        - asset: assets/fonts/Sarabun-ExtraBold.ttf weight: 800
-```
-
-### 4. รัน
-```bash
 flutter run
 ```
 
-## ต่อยอด — API จริง
+## ✨ Features
 
-### แหล่งข้อมูลราคาน้ำมัน
-- **กรมธุรกิจพลังงาน (DOEB)**: https://www.doeb.go.th
-- **PTT API**: ตรวจสอบผ่าน app.pttplc.com
-- **Mockup API ของตัวเอง**: สร้าง backend ที่ scrape ราคาจากเว็บปั้ม
+- ✅ ราคาน้ำมันจาก Thai Oil API (ข้อมูลจริงรายวัน)
+- ✅ เลือกปั้ม: PTT, Shell, BCP, PT, Caltex, SUSCO, IRPC, Pure
+- ✅ แผนที่ Dark Theme (CartoDB Dark Matter)
+- ✅ ค้นหาปั้มใกล้เคียงด้วย Overpass API
+- ✅ ค้นหาพื้นที่ด้วย Nominatim geocoding
+- ✅ เลือกรัศมี 1/3/5/10 กม.
+- ✅ กรองตามแบรนด์
+- ✅ Custom Map Pin สีแยกตามแบรนด์
+- ✅ แตะ Pin บนแผนที่ → เปิด detail
+- ✅ นำทางผ่าน Google Maps / Apple Maps
+- ✅ Cache 30 นาที
 
-แก้ไขใน `lib/services/fuel_service.dart`:
-```dart
-Future<List<FuelPrice>> fetchPrices(String brandId) async {
-  final response = await http.get(
-    Uri.parse('https://your-api.com/prices?brand=$brandId'),
-    headers: {'Authorization': 'Bearer $apiKey'},
-  );
-  final data = jsonDecode(response.body) as List;
-  return data.map((e) => FuelPrice.fromJson(e)).toList();
-}
+## 📄 License
+```
+โครงการนี้เผยแพร่ภายใต้ MIT License — สามารถนำไปใช้ แก้ไข และแจกจ่ายได้อย่างอิสระ
+(โปรดให้เครดิต OpenStreetMap และ Thai Oil API ตามข้อกำหนดของแต่ละ provider)
 ```
 
-## Features
-
-- [x] ดูราคาน้ำมันแยกตามปั้ม (PTT, Shell, BCP, PT, Caltex, SUSCO)
-- [x] แสดงการเปลี่ยนแปลงราคา (ขึ้น/ลง/คงที่)
-- [x] ค้นหาปั้มใกล้เคียงด้วย GPS
-- [x] แผนที่แสดง Pin ปั้ม
-- [x] กรองตามแบรนด์
-- [x] ค้นหาตามชื่อหรือพื้นที่
-- [x] นำทางไปปั้มผ่าน Google Maps
-- [x] รายการโปรด (UI พร้อม)
-- [x] Dark theme สวยงาม
-
-## Packages ที่ใช้
-
-| Package               | ใช้สำหรับ           |
-| --------------------- | ---------------- |
-| `google_maps_flutter` | แผนที่             |
-| `geolocator`          | GPS              |
-| `provider`            | State management |
-| `http`                | API calls        |
-| `url_launcher`        | เปิด Google Maps  |
-| `shared_preferences`  | บันทึก settings    |
-| `intl`                | จัดรูปแบบวันที่/เวลา  |
+<br>
+<hr>
+<p align="center"> <strong>Made with Flutter & OpenStreetMap</strong>
+<br><strong> Developed by <a href="https://www.facebook.com/saharat.suwannapapond.7/">Sarus</a></strong> ⭐ อย่าลืมกดดาว Github ถ้าชอบโปรเจคนี้! </p>

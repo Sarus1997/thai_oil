@@ -4,12 +4,16 @@ import '../services/app_provider.dart';
 import '../models/fuel_model.dart';
 import '../theme/app_theme.dart';
 import '../widgets/common_widgets.dart';
+import '../widgets/horizontal_scroll_list.dart';
 import 'station_detail_screen.dart';
 import 'nearby_screen.dart';
+import 'favorites_screen.dart';
+import 'settings_screen.dart';
+import 'compare_screen.dart';
+import 'calculator_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
-
   @override
   State<HomeScreen> createState() => _HomeScreenState();
 }
@@ -17,34 +21,63 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   int _currentIndex = 0;
 
+  final _screens = const [
+    _HomeTab(),
+    NearbyScreen(),
+    FavoritesScreen(),
+    SettingsScreen(),
+  ];
+
   @override
   Widget build(BuildContext context) {
-    final screens = [
-      const _HomeTab(),
-      const NearbyScreen(),
-      const _FavoritesTab(),
-      const _SettingsTab(),
-    ];
-
     return Scaffold(
-      body: IndexedStack(index: _currentIndex, children: screens),
-      bottomNavigationBar: Container(
-        decoration: const BoxDecoration(
-          border: Border(top: BorderSide(color: AppTheme.border, width: 0.5)),
-        ),
-        child: BottomNavigationBar(
-          currentIndex: _currentIndex,
-          onTap: (i) => setState(() => _currentIndex = i),
-          items: const [
-            BottomNavigationBarItem(
-                icon: Icon(Icons.local_gas_station_rounded), label: 'ราคา'),
-            BottomNavigationBarItem(
-                icon: Icon(Icons.map_rounded), label: 'แผนที่'),
-            BottomNavigationBarItem(
-                icon: Icon(Icons.favorite_rounded), label: 'รายการโปรด'),
-            BottomNavigationBarItem(
-                icon: Icon(Icons.settings_rounded), label: 'ตั้งค่า'),
-          ],
+      body: IndexedStack(index: _currentIndex, children: _screens),
+      bottomNavigationBar: Consumer<AppProvider>(
+        builder: (_, provider, __) => Container(
+          decoration: const BoxDecoration(
+            border: Border(top: BorderSide(color: AppTheme.border, width: 0.5)),
+          ),
+          child: BottomNavigationBar(
+            currentIndex: _currentIndex,
+            onTap: (i) => setState(() => _currentIndex = i),
+            items: [
+              const BottomNavigationBarItem(
+                  icon: Icon(Icons.local_gas_station_rounded), label: 'ราคา'),
+              const BottomNavigationBarItem(
+                  icon: Icon(Icons.map_rounded), label: 'แผนที่'),
+              BottomNavigationBarItem(
+                icon: Stack(
+                  clipBehavior: Clip.none,
+                  children: [
+                    const Icon(Icons.favorite_rounded),
+                    if (provider.favorites.isNotEmpty)
+                      Positioned(
+                        right: -4,
+                        top: -4,
+                        child: Container(
+                          width: 14,
+                          height: 14,
+                          decoration: const BoxDecoration(
+                              color: AppTheme.primary, shape: BoxShape.circle),
+                          child: Center(
+                            child: Text(
+                              '${provider.favorites.length}',
+                              style: const TextStyle(
+                                  fontSize: 8,
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.w700),
+                            ),
+                          ),
+                        ),
+                      ),
+                  ],
+                ),
+                label: 'โปรด',
+              ),
+              const BottomNavigationBarItem(
+                  icon: Icon(Icons.settings_rounded), label: 'ตั้งค่า'),
+            ],
+          ),
         ),
       ),
     );
@@ -65,11 +98,12 @@ class _HomeTab extends StatelessWidget {
           onRefresh: provider.refresh,
           child: CustomScrollView(
             slivers: [
-              _buildHeader(context, provider),
-              SliverToBoxAdapter(child: _buildBrandSelector(context, provider)),
+              _buildHeader(provider),
+              SliverToBoxAdapter(child: _buildBrandSelector(provider)),
               if (provider.error != null)
-                SliverToBoxAdapter(child: _buildError(provider)),
+                SliverToBoxAdapter(child: _buildError(context, provider)),
               SliverToBoxAdapter(child: _buildPriceGrid(provider)),
+              SliverToBoxAdapter(child: _buildQuickActions(context)),
               SliverToBoxAdapter(child: _buildNearbySection(context, provider)),
               const SliverToBoxAdapter(child: SizedBox(height: 24)),
             ],
@@ -79,7 +113,7 @@ class _HomeTab extends StatelessWidget {
     );
   }
 
-  Widget _buildHeader(BuildContext context, AppProvider provider) {
+  Widget _buildHeader(AppProvider provider) {
     return SliverAppBar(
       expandedHeight: 130,
       pinned: true,
@@ -100,43 +134,49 @@ class _HomeTab extends StatelessWidget {
               colors: [Color(0xFF0D1B4B), AppTheme.background],
             ),
           ),
-          padding: const EdgeInsets.fromLTRB(20, 60, 20, 16),
+          padding: const EdgeInsets.fromLTRB(20, 0, 20, 12),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisAlignment: MainAxisAlignment.end,
+            mainAxisSize: MainAxisSize.min,
             children: [
               const Text('ราคาน้ำมันวันนี้',
                   style: TextStyle(
-                      fontSize: 22,
+                      fontSize: 20,
                       fontWeight: FontWeight.w800,
-                      color: AppTheme.textPrimary)),
-              const SizedBox(height: 4),
+                      color: AppTheme.textPrimary),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis),
+              const SizedBox(height: 3),
               Row(
                 children: [
                   const Icon(Icons.location_on,
-                      size: 12, color: AppTheme.green),
+                      size: 11, color: AppTheme.green),
                   const SizedBox(width: 4),
                   Expanded(
                     child: Text(provider.locationName,
                         style: const TextStyle(
-                            fontSize: 12, color: AppTheme.textSecondary)),
+                            fontSize: 11, color: AppTheme.textSecondary),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis),
                   ),
-                  if (provider.apiDate.isNotEmpty)
+                  if (provider.apiDate.isNotEmpty) ...[
+                    const SizedBox(width: 8),
                     Container(
                       padding: const EdgeInsets.symmetric(
-                          horizontal: 8, vertical: 2),
+                          horizontal: 7, vertical: 2),
                       decoration: BoxDecoration(
                         color: AppTheme.green.withOpacity(0.12),
-                        borderRadius: BorderRadius.circular(6),
+                        borderRadius: BorderRadius.circular(5),
                       ),
-                      child: Text(
-                        provider.apiDate,
-                        style: const TextStyle(
-                            fontSize: 9,
-                            color: AppTheme.green,
-                            fontWeight: FontWeight.w600),
-                      ),
+                      child: Text(provider.apiDate,
+                          style: const TextStyle(
+                              fontSize: 8,
+                              color: AppTheme.green,
+                              fontWeight: FontWeight.w600),
+                          maxLines: 1),
                     ),
+                  ],
                 ],
               ),
             ],
@@ -146,35 +186,37 @@ class _HomeTab extends StatelessWidget {
     );
   }
 
-  Widget _buildBrandSelector(BuildContext context, AppProvider provider) {
+  Widget _buildBrandSelector(AppProvider provider) {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(20, 20, 20, 12),
+      padding: const EdgeInsets.fromLTRB(0, 18, 0, 10),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const SectionHeader(title: 'เลือกปั้มน้ำมัน'),
+          const Padding(
+            padding: EdgeInsets.symmetric(horizontal: 20),
+            child: SectionHeader(title: 'เลือกปั้มน้ำมัน'),
+          ),
           const SizedBox(height: 10),
-          SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            child: Row(
-              children: FuelBrand.all
-                  .map((brand) => Padding(
-                        padding: const EdgeInsets.only(right: 8),
-                        child: BrandChip(
-                          brand: brand,
-                          isSelected: provider.selectedBrandId == brand.id,
-                          onTap: () => provider.selectBrand(brand.id),
-                        ),
-                      ))
-                  .toList(),
-            ),
+          HorizontalScrollList(
+            height: 38,
+            padding: const EdgeInsets.symmetric(horizontal: 20),
+            children: FuelBrand.all
+                .map((brand) => Padding(
+                      padding: const EdgeInsets.only(right: 8),
+                      child: BrandChip(
+                        brand: brand,
+                        isSelected: provider.selectedBrandId == brand.id,
+                        onTap: () => provider.selectBrand(brand.id),
+                      ),
+                    ))
+                .toList(),
           ),
         ],
       ),
     );
   }
 
-  Widget _buildError(AppProvider provider) {
+  Widget _buildError(BuildContext context, AppProvider provider) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 4),
       child: Container(
@@ -189,9 +231,8 @@ class _HomeTab extends StatelessWidget {
             const Icon(Icons.wifi_off_rounded, size: 14, color: AppTheme.red),
             const SizedBox(width: 8),
             Expanded(
-              child: Text(provider.error!,
-                  style: const TextStyle(fontSize: 11, color: AppTheme.red)),
-            ),
+                child: Text(provider.error!,
+                    style: const TextStyle(fontSize: 11, color: AppTheme.red))),
             GestureDetector(
               onTap: provider.refresh,
               child: const Text('ลองใหม่',
@@ -231,16 +272,13 @@ class _HomeTab extends StatelessWidget {
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),
               gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2,
-                mainAxisSpacing: 10,
-                crossAxisSpacing: 10,
-                childAspectRatio: 1.5,
-              ),
+                  crossAxisCount: 2,
+                  mainAxisSpacing: 10,
+                  crossAxisSpacing: 10,
+                  childAspectRatio: 1.5),
               itemCount: provider.prices.length,
-              itemBuilder: (_, i) => FuelPriceCard(
-                price: provider.prices[i],
-                isHighlight: i == 0,
-              ),
+              itemBuilder: (_, i) =>
+                  FuelPriceCard(price: provider.prices[i], isHighlight: i == 0),
             ),
         ],
       ),
@@ -260,14 +298,49 @@ class _HomeTab extends StatelessWidget {
           const Icon(Icons.info_outline_rounded,
               color: AppTheme.textMuted, size: 32),
           const SizedBox(height: 8),
-          Text(
-            'ไม่มีข้อมูลราคาของ ${provider.selectedBrand.name}',
-            style: const TextStyle(color: AppTheme.textSecondary, fontSize: 13),
-            textAlign: TextAlign.center,
+          Text('ไม่มีข้อมูลของ ${provider.selectedBrand.name}',
+              style:
+                  const TextStyle(color: AppTheme.textSecondary, fontSize: 13)),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildQuickActions(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const SectionHeader(title: 'เครื่องมือ'),
+          const SizedBox(height: 10),
+          Row(
+            children: [
+              Expanded(
+                child: _QuickActionCard(
+                  icon: Icons.compare_arrows_rounded,
+                  iconColor: AppTheme.amber,
+                  iconBg: AppTheme.amberBg,
+                  label: 'เปรียบเทียบ\nราคาทุกปั้ม',
+                  onTap: () => Navigator.push(context,
+                      MaterialPageRoute(builder: (_) => const CompareScreen())),
+                ),
+              ),
+              const SizedBox(width: 10),
+              Expanded(
+                child: _QuickActionCard(
+                  icon: Icons.calculate_rounded,
+                  iconColor: AppTheme.green,
+                  iconBg: AppTheme.greenBg,
+                  label: 'คำนวณ\nค่าน้ำมัน',
+                  onTap: () => Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (_) => const CalculatorScreen())),
+                ),
+              ),
+            ],
           ),
-          const SizedBox(height: 4),
-          const Text('กรุณาเลือกปั้มอื่น',
-              style: TextStyle(color: AppTheme.textMuted, fontSize: 11)),
         ],
       ),
     );
@@ -289,7 +362,7 @@ class _HomeTab extends StatelessWidget {
                       child: ShimmerCard(height: 72),
                     ))
           else if (provider.nearbyStations.isEmpty)
-            const _EmptyStations()
+            _buildEmptyStations()
           else
             ...provider.nearbyStations.take(3).map((s) => _StationListItem(
                   station: s,
@@ -305,22 +378,37 @@ class _HomeTab extends StatelessWidget {
       ),
     );
   }
+
+  Widget _buildEmptyStations() {
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: AppTheme.card,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: AppTheme.border, width: 0.5),
+      ),
+      child: const Column(children: [
+        Icon(Icons.location_off_rounded, color: AppTheme.textMuted, size: 28),
+        SizedBox(height: 6),
+        Text('ไม่พบปั้มใกล้เคียง',
+            style: TextStyle(color: AppTheme.textSecondary, fontSize: 13)),
+        Text('กรุณาเปิดใช้งาน GPS',
+            style: TextStyle(color: AppTheme.textMuted, fontSize: 11)),
+      ]),
+    );
+  }
 }
 
-// ─── Station List Item ────────────────────────────────────────────────────────
 class _StationListItem extends StatelessWidget {
   final GasStation station;
   final VoidCallback onTap;
-
   const _StationListItem({required this.station, required this.onTap});
 
   @override
   Widget build(BuildContext context) {
     final mainPrice = station.prices.isNotEmpty
-        ? station.prices.firstWhere(
-            (p) => p.type.contains('gasohol_91'),
-            orElse: () => station.prices.first,
-          )
+        ? station.prices.firstWhere((p) => p.type.contains('gasohol_91'),
+            orElse: () => station.prices.first)
         : null;
 
     return GestureDetector(
@@ -363,11 +451,10 @@ class _StationListItem extends StatelessWidget {
                                   : AppTheme.textMuted)),
                       const SizedBox(width: 6),
                       Expanded(
-                        child: Text('• ${station.hours}',
-                            style: const TextStyle(
-                                fontSize: 10, color: AppTheme.textSecondary),
-                            overflow: TextOverflow.ellipsis),
-                      ),
+                          child: Text('• ${station.hours}',
+                              style: const TextStyle(
+                                  fontSize: 10, color: AppTheme.textSecondary),
+                              overflow: TextOverflow.ellipsis)),
                     ],
                   ),
                 ],
@@ -397,141 +484,56 @@ class _StationListItem extends StatelessWidget {
   }
 }
 
-class _EmptyStations extends StatelessWidget {
-  const _EmptyStations();
+class _QuickActionCard extends StatelessWidget {
+  final IconData icon;
+  final Color iconColor;
+  final Color iconBg;
+  final String label;
+  final VoidCallback onTap;
+
+  const _QuickActionCard({
+    required this.icon,
+    required this.iconColor,
+    required this.iconBg,
+    required this.label,
+    required this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(24),
-      decoration: BoxDecoration(
-        color: AppTheme.card,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: AppTheme.border, width: 0.5),
-      ),
-      child: const Column(
-        children: [
-          Icon(Icons.location_off_rounded, color: AppTheme.textMuted, size: 32),
-          SizedBox(height: 8),
-          Text('ไม่พบปั้มใกล้เคียง',
-              style: TextStyle(color: AppTheme.textSecondary, fontSize: 13)),
-          Text('กรุณาเปิดใช้งาน GPS',
-              style: TextStyle(color: AppTheme.textMuted, fontSize: 11)),
-        ],
-      ),
-    );
-  }
-}
-
-// ─── Placeholder Tabs ─────────────────────────────────────────────────────────
-class _FavoritesTab extends StatelessWidget {
-  const _FavoritesTab();
-
-  @override
-  Widget build(BuildContext context) {
-    return const Scaffold(
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.all(14),
+        decoration: BoxDecoration(
+          color: AppTheme.card,
+          borderRadius: BorderRadius.circular(14),
+          border: Border.all(color: AppTheme.border, width: 0.5),
+        ),
+        child: Row(
           children: [
-            Icon(Icons.favorite_border_rounded,
-                color: AppTheme.textMuted, size: 48),
-            SizedBox(height: 12),
-            Text('ยังไม่มีรายการโปรด',
-                style: TextStyle(color: AppTheme.textSecondary)),
-            SizedBox(height: 4),
-            Text('กดที่หัวใจเพื่อบันทึกปั้มที่ชื่นชอบ',
-                style: TextStyle(color: AppTheme.textMuted, fontSize: 12)),
+            Container(
+              width: 38,
+              height: 38,
+              decoration: BoxDecoration(
+                color: iconBg,
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Icon(icon, color: iconColor, size: 20),
+            ),
+            const SizedBox(width: 10),
+            Expanded(
+              child: Text(label,
+                  style: const TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w600,
+                      color: AppTheme.textPrimary,
+                      height: 1.3)),
+            ),
+            const Icon(Icons.chevron_right_rounded,
+                size: 16, color: AppTheme.textMuted),
           ],
         ),
-      ),
-    );
-  }
-}
-
-class _SettingsTab extends StatelessWidget {
-  const _SettingsTab();
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('ตั้งค่า')),
-      body: ListView(
-        padding: const EdgeInsets.all(20),
-        children: [
-          _SettingItem(
-              icon: Icons.notifications_rounded,
-              label: 'การแจ้งเตือน',
-              sub: 'แจ้งเมื่อราคาเปลี่ยน'),
-          _SettingItem(
-              icon: Icons.local_gas_station_rounded,
-              label: 'ปั้มเริ่มต้น',
-              sub: 'PTT'),
-          _SettingItem(
-              icon: Icons.directions_car_rounded,
-              label: 'ประเภทน้ำมันที่ใช้',
-              sub: 'แก๊สโซฮอล์ 91'),
-          _SettingItem(
-              icon: Icons.info_outline_rounded,
-              label: 'แหล่งข้อมูล',
-              sub: 'api.chnwt.dev/thai-oil-api'),
-          _SettingItem(
-              icon: Icons.info_outline_rounded,
-              label: 'เกี่ยวกับแอพ',
-              sub: 'FuelTH v1.0.0'),
-        ],
-      ),
-    );
-  }
-}
-
-class _SettingItem extends StatelessWidget {
-  final IconData icon;
-  final String label;
-  final String sub;
-
-  const _SettingItem(
-      {required this.icon, required this.label, required this.sub});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 8),
-      padding: const EdgeInsets.all(14),
-      decoration: BoxDecoration(
-        color: AppTheme.card,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: AppTheme.border, width: 0.5),
-      ),
-      child: Row(
-        children: [
-          Container(
-            width: 36,
-            height: 36,
-            decoration: BoxDecoration(
-                color: AppTheme.primary.withOpacity(0.15),
-                borderRadius: BorderRadius.circular(8)),
-            child: Icon(icon, size: 18, color: AppTheme.primary),
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(label,
-                    style: const TextStyle(
-                        fontSize: 13,
-                        fontWeight: FontWeight.w600,
-                        color: AppTheme.textPrimary)),
-                Text(sub,
-                    style: const TextStyle(
-                        fontSize: 11, color: AppTheme.textSecondary)),
-              ],
-            ),
-          ),
-          const Icon(Icons.chevron_right_rounded,
-              size: 18, color: AppTheme.textMuted),
-        ],
       ),
     );
   }
