@@ -205,7 +205,7 @@ class SettingsScreen extends StatelessWidget {
                     const SizedBox(height: 24),
                     const Center(
                       child: Text(
-                        'FuelTH v1.0.0 • Made with ❤️ in Thailand\nข้อมูลราคาจาก Thai Oil API • แผนที่จาก OSM',
+                        'FuelTH v1.0.0 • Developer By Sarus • GitHub: github.com/Sarus1997\nข้อมูลราคาจาก Thai Oil API • แผนที่จาก OSM',
                         style:
                             TextStyle(fontSize: 10, color: AppTheme.textMuted),
                         textAlign: TextAlign.center,
