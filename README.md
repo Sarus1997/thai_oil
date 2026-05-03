@@ -26,7 +26,7 @@
   <em>หรือ</em>
   
   <h3>📦 Download App</h3>
-  <a href="./assets/apk/**fuel-th.apk**" download>
+  <a href="https://fuel-th.web.app/apk/fuel-th.apk" download>
     📥 ดาวน์โหลด APK
   </a>
 </div>
