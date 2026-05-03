@@ -14,6 +14,23 @@
   <em>📍 หน้าหลัก · ราคาน้ำมัน · แผนที่ค้นหาปั้ม · รายละเอียดและนำทาง</em>
 </div>
 
+--- 
+
+<div align="center">
+  <h2>🚀 Live Demo</h2>
+  <a href="https://fuel-th.web.app/" target="_blank">
+    🌐 fuel-th.web.app
+  </a>
+  
+  <br><br>
+  <em>หรือ</em>
+  
+  <h3>📦 Download App</h3>
+  <a href="./assets/apk/**fuel-th.apk**" download>
+    📥 ดาวน์โหลด APK
+  </a>
+</div>
+
 ---
 
 <div align="center">
